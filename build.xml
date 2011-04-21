@@ -1,0 +1,87 @@
+<project name="arena" default="jar" basedir=".">
+  <property environment="env"/>  
+  
+  <property name="app.path" value=""/>
+
+  <property name="project.name" value="arena"/>
+  <property name="project.version" value="0.1"/>
+
+  <property name="basedir" value="."/>
+  <property name="backup.dir" value="../backups"/>
+  
+  <property name="src.java" value="${basedir}/src/main/java"/>
+  <property name="src.conf" value="${basedir}/src/main/conf"/>
+  <property name="lib.compile" value="${basedir}/lib"/>
+  
+  <property name="target" value="${basedir}/target"/>
+  <property name="target.classes" value="${target}/classes"/>
+  <property name="target.jar" value="${project.name}-${project.version}.jar"/>
+  
+  <target name="echo:properties">
+    <echoproperties/>
+  </target>  
+
+  <target name="echo:javaProperties">
+    <echo message="Java Runtime Environment version: ${java.version} ${java.vendor} ${java.vendor.url}"/>
+    <echo message="Java installation directory: ${java.home}"/>
+    <echo message="Java Virtual Machine specification: ${java.vm.specification.version} ${java.vm.specification.vendor} ${java.vm.specification.name}"/>
+    <echo message="Java Virtual Machine implementation: ${java.vm.version} ${java.vm.vendor} ${java.vm.name}"/>
+    <echo message="Java Runtime Environment specification: ${java.specification.version} ${java.specification.vendor} ${java.specification.name}"/>
+    <echo message="Java class format version number: ${java.class.version}"/>
+    <echo message="Java class path: ${java.class.path}"/>
+    <echo message="List of paths to search when loading libraries: ${java.library.path}"/>
+    <echo message="Path of extension directory or directories: ${java.ext.dirs}"/>
+    <echo message="Default temp file path: ${java.io.tmpdir}"/>
+    <echo message="Operating system name: ${os.name} ${os.arch} ${os.version}"/>
+  </target>
+  
+  <!-- BUILD TARGETS -->
+
+  <target name="clean">
+    <delete dir="${target}"/>
+  </target>
+  
+  <target name="java:compile">
+    <mkdir dir="${target.classes}"/>
+    <javac srcdir="${src.java}" 
+           destdir="${target.classes}"
+           debug="true" 
+           deprecation="true"
+           optimize="true" 
+           encoding="UTF-8">
+      <classpath>
+        <fileset dir="${lib.compile}" includes="*.jar"/>
+      </classpath>
+    </javac>
+    <copy todir="${target.classes}">
+      <fileset dir="${src.java}" includes="**/*.properties,**/*.xml"/>
+    </copy>
+  </target>
+  
+  <target name="jar" depends="java:compile">
+    <jar jarfile="${target}/${target.jar}" basedir="${target.classes}"/>
+  </target>
+  
+  <target name="sourcejar" depends="java:compile,copysrc">
+    <jar jarfile="${target}/${target.jar}" basedir="${target.classes}"/>
+  </target>
+
+  <target name="copysrc">    
+    <copy todir="${target.classes}">
+      <fileset dir="${src.java}" includes="**/*.properties,**/*.xml,**/*.java"/>
+    </copy>
+    <copy todir="${target.classes}" failonerror="false">
+      <fileset dir="${src.conf}" includes="**/*.properties,**/*.xml,**/*.java"/>
+    </copy>
+  </target>
+  
+  <target name="backup">
+    <tstamp/>
+    <mkdir dir="${backup.dir}"/>
+    <tar tarfile="${backup.dir}/${project.name}_${DSTAMP}${TSTAMP}.tar" basedir="." includes="**"/>
+    <gzip src="${backup.dir}/${project.name}_${DSTAMP}${TSTAMP}.tar" 
+      zipfile="${backup.dir}/${project.name}_${DSTAMP}${TSTAMP}.tar.gz"/>
+    <delete file="${backup.dir}/${project.name}_${DSTAMP}${TSTAMP}.tar"/>
+  </target>
+  
+</project>

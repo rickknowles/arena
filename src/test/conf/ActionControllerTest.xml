@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+                      http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean id="testAction" class="arena.action.TestAction"/>
+
+  <bean id="actionController" class="arena.action.ActionController"/>
+  <bean id="mapping" class="arena.action.ActionControllerUrlMapping">
+    <property name="urlMappings">
+      <props>
+        <prop key="/abc/testURI.do">testAction.testMethod</prop>
+      </props>
+    </property>
+  </bean>
+</beans>
